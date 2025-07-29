@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./asistente_langchain
+    container_name: langchain-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SECRET_KEY=chatbot-backend-key
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LANGCHAIN_VERBOSE=true
+    volumes:
+      - ./asistente_langchain/.env:/app/.env:ro
+    restart: unless-stopped
+    networks:
+      - chatbot-network
+
+  chatbot-app:
+    build:
+      context: ./chatbot-app-python
+    container_name: chatbot-app-python
+    ports:
+      - "5000:5000"
+    environment:
+      - CHATBOT_API_BASE_URL=http://backend:8080
+      - SECRET_KEY=chatbot-secret-key-2025
+    volumes:
+      - ./chatbot-app-python/.env:/app/.env:ro
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - chatbot-network
+
+networks:
+  chatbot-network:
+    driver: bridge
