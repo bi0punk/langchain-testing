@@ -1,0 +1,64 @@
+version: "3.9"
+
+services:
+  adk-agent:
+    build:
+      context: ./adk-agent
+    container_name: adk-agent
+    environment:
+      PORT: "8001"                 # usado por el CMD de uvicorn
+      PYTHONUNBUFFERED: "1"
+    ports:
+      - "8001:8001"
+    networks: [appnet]
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "exec 3<>/dev/tcp/127.0.0.1/8001"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+
+  langgraph-agent:
+    build:
+      context: ./langgraph-agent
+    container_name: langgraph-agent
+    environment:
+      PYTHONUNBUFFERED: "1"
+    ports:
+      - "8080:8080"
+    networks: [appnet]
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+
+  chatbot_gateway:
+    build:
+      context: ./chatbot_gateway
+    container_name: chatbot-gateway
+    environment:
+      PYTHONUNBUFFERED: "1"
+      # URLs internas por nombre de servicio
+      ADK_AGENT_URL: "http://adk-agent:8001"
+      LANGGRAPH_AGENT_URL: "http://langgraph-agent:8080"
+      GATEWAY_PORT: "8090"   # usa esta var si tu app la lee; si no, ignórala
+    ports:
+      - "8090:8090"
+    depends_on:
+      adk-agent:
+        condition: service_healthy
+      langgraph-agent:
+        condition: service_healthy
+    networks: [appnet]
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "exec 3<>/dev/tcp/127.0.0.1/8090"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+
+networks:
+  appnet:
+    driver: bridge
