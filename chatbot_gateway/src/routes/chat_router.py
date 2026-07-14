@@ -1,8 +1,11 @@
 # chatbot_gateway/src/routes/chat_router.py
 import os
+import logging
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import httpx
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["chat"])
 
@@ -37,8 +40,8 @@ async def chat(payload: ChatIn):
                     f"{ADK_AGENT_URL}/apps/sales_agent/users/{DEFAULT_USER}/sessions/{DEFAULT_USER}",
                     json={}
                 )
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning("ADK session creation error (non-fatal): %s", e)
 
             # Forma confirmada por tus tests:
             body = {

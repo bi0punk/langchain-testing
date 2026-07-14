@@ -33,7 +33,7 @@ async def send_waha_message(chatId: str, text: str):
 
 async def handle_error_response(request: WahaRequest, user_message: str, technical_message: str, chatbot_data=None):
     """Handle error response by sending WAHA message and returning error dict"""
-    await send_waha_message(request.payload.from_, user_message, request.session)
+    await send_waha_message(str(request.payload.from_), user_message)
     error_response = {"status": "error", "message": technical_message}
     if chatbot_data:
         error_response["chatbot_response"] = chatbot_data
@@ -79,19 +79,9 @@ async def webhook(request: WahaRequest, mapperIn: Callable, mapperOut: Callable,
                 json=chatbot_payload,
                 headers={"Content-Type": "application/json"}
             )
-            chatbot_response.raise_for_status()
             chatbot_data = chatbot_response.json()
 
         logger.info(f"Chatbot API response: {chatbot_data}")
-        
-        # Validate chatbot API response
-        if chatbot_response.status_code != 200:
-            return await handle_error_response(
-                request,
-                "Lo siento, no puedo procesar tu mensaje en este momento. Por favor intenta nuevamente más tarde.",
-                f"Chatbot API error - Status code: {chatbot_response.status_code}, Status: {chatbot_data.get('status', 'unknown')}",
-                chatbot_data
-            )
         
         response_text = mapperOut(chatbot_data)
         

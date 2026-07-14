@@ -8,7 +8,7 @@ AGENT_DIR = os.path.dirname(os.path.abspath(__file__))
 # Example session service URI (e.g., SQLite)
 SESSION_SERVICE_URI = "sqlite:///./sessions.db"
 # Example allowed origins for CORS
-ALLOWED_ORIGINS = ["*"]
+ALLOWED_ORIGINS = ["http://localhost:3000", "http://localhost:8090"]
 # Set web=True if you intend to serve a web interface, False otherwise
 SERVE_WEB_INTERFACE = False
 
