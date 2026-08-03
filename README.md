@@ -4,7 +4,7 @@ Multi-agent architecture testing ground with three microservices: an ADK-based s
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://python.org)
-[![CI](https://github.com/tu-usuario/langchain-testing/actions/workflows/ci.yml/badge.svg)](https://github.com/tu-usuario/langchain-testing/actions/workflows/ci.yml)
+[![CI](https://github.com/bi0punk/langchain-testing/actions/workflows/ci.yml/badge.svg)](https://github.com/bi0punk/langchain-testing/actions/workflows/ci.yml)
 
 ## Tabla de Contenidos
 
@@ -74,7 +74,7 @@ langchain-testing/
 ## Instalación
 
 ```bash
-git clone https://github.com/tu-usuario/langchain-testing.git
+git clone https://github.com/bi0punk/langchain-testing.git
 cd langchain-testing
 cp .env.example .env
 # Editar .env con API keys
