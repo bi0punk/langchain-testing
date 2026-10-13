@@ -1,15 +1,16 @@
+import logging
 import os
-import uvicorn
+
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import logging
-from dotenv import load_dotenv
 
 load_dotenv()
 
-from src.routes.waha_router import router as waha_router
-from src.routes.chat_router import router as chat_router
-from fastapi.staticfiles import StaticFiles
+from fastapi.staticfiles import StaticFiles  # noqa: E402
+
+from src.routes.chat_router import router as chat_router  # noqa: E402
+from src.routes.waha_router import router as waha_router  # noqa: E402
 
 app = FastAPI()
 
@@ -23,8 +24,7 @@ app.include_router(waha_router)
 app.mount("/", StaticFiles(directory="src/static", html=True), name="static")
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 app.add_middleware(

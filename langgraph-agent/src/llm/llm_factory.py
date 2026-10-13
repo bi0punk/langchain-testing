@@ -1,12 +1,14 @@
-from enum import Enum
-from typing import Union, Optional, Dict, Any
-from langchain_openai import ChatOpenAI
-from langchain_nvidia_ai_endpoints import ChatNVIDIA
 import os
+from enum import Enum
+
+from langchain_nvidia_ai_endpoints import ChatNVIDIA
+from langchain_openai import ChatOpenAI
+
 
 class LLMProvider(Enum):
     NVIDIA = "nvidia"
     OPENAI = "openai"
+
 
 class LLMFactory:
     def __init__(self):
@@ -19,25 +21,26 @@ class LLMFactory:
             LLMProvider.OPENAI: {
                 "model": "gpt-4o-mini",
                 "temperature": temperature,
-            }
+            },
         }
-    
+
     def create_chat_model(
-        self, 
-        provider: Union[LLMProvider, str],
-        model_name: Optional[str] = None,
-        **kwargs
-    ) -> Union[ChatNVIDIA, ChatOpenAI]:
+        self, provider: LLMProvider | str, model_name: str | None = None, **kwargs
+    ) -> ChatNVIDIA | ChatOpenAI:
         # Convertir string a enum si es necesario
         if isinstance(provider, str):
             provider = LLMProvider(provider.lower())
-        
+
         # Obtener configuración por defecto
         config = self.default_configs[provider].copy()
-        
+
+        # Permitir override explícito del modelo
+        if model_name:
+            config["model"] = model_name
+
         # Actualizar con parámetros personalizados
         config.update(kwargs)
-        
+
         # Crear el modelo correspondiente
         if provider == LLMProvider.NVIDIA:
             if not os.getenv("NVIDIA_API_KEY"):
