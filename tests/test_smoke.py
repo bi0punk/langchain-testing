@@ -34,10 +34,14 @@ def test_each_service_has_dockerfile():
         assert (REPO_ROOT / svc / "Dockerfile").exists(), f"Falta Dockerfile en {svc}"
 
 
-def test_chatbot_gateway_main_imports():
-    import importlib
-    for mod_name in ["chatbot_entities", "waha_mapper"]:
-        spec = importlib.util.find_spec(f"entities.{mod_name}")
-        if spec is None:
-            spec = importlib.util.find_spec(f"mapper.{mod_name}")
-        assert spec is not None or True
+def test_chatbot_gateway_modules_present_and_parse():
+    """Los módulos puros del gateway existen y son Python válido (sin deps pesadas)."""
+    import ast
+
+    modules = [
+        REPO_ROOT / "chatbot_gateway" / "src" / "entities" / "chatbot_entities.py",
+        REPO_ROOT / "chatbot_gateway" / "src" / "mapper" / "waha_mapper.py",
+    ]
+    for module in modules:
+        assert module.exists(), f"Falta {module}"
+        ast.parse(module.read_text(encoding="utf-8"))
