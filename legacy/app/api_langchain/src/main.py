@@ -1,16 +1,18 @@
-import os
+import logging
+
 import uvicorn
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import logging
-from contextlib import asynccontextmanager
-from dotenv import load_dotenv
+
 load_dotenv()
-from src.routes.chatbot_router import router as chatbot_router
+from src.routes.chatbot_router import router as chatbot_router  # noqa: E402
 
 # Cargar variables de entorno del archivo .env
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
@@ -30,4 +32,4 @@ app.add_middleware(
 app.include_router(chatbot_router)
 
 if __name__ == "__main__":
-    uvicorn.run("src.main:app", host="0.0.0.0", port=8080, reload=True)
+    uvicorn.run("src.main:app", host="0.0.0.0", port=8080, reload=True)  # nosec B104

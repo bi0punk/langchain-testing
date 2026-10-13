@@ -22,7 +22,7 @@ Este documento contiene las instrucciones para construir y ejecutar la aplicaci√
      --name chatbot-app \
      -p 5000:5000 \
      -e CHATBOT_API_BASE_URL=http://localhost:8080 \
-     -e SECRET_KEY=SECRETO_REEMPLAZAR \
+     -e SECRET_KEY=tu-clave-secreta-muy-segura \
      chatbot-app-python
    ```
 
