@@ -106,6 +106,8 @@ cp .env.example .env
 # Editar .env con API keys
 ```
 
+`docker-compose.yml` carga ese `.env` en los tres servicios mediante `env_file`, así que las claves y demás variables llegan a los contenedores. El archivo debe existir antes de ejecutar Compose.
+
 ## Uso
 
 ```bash
@@ -118,7 +120,7 @@ Los servicios se inician y el gateway centraliza las peticiones en `http://local
 
 | Variable | Default | Descripción |
 |---|---|---|
-| `ALLOW_ORIGINS` | `http://localhost:8090` | Orígenes CORS permitidos |
+| `ALLOWED_ORIGINS` | `http://localhost:3000` (código); `http://localhost:3000,http://localhost:8090` en `.env.example` | Orígenes CORS permitidos, separados por comas (también se acepta `ALLOW_ORIGINS` por compatibilidad) |
 | `ADK_AGENT_URL` | `http://adk-agent:8001` | URL interna del agente ADK |
 | `LANGGRAPH_AGENT_URL` | `http://langgraph-agent:8080` | URL interna del agente LangGraph |
 | `OPENAI_API_KEY` | — | API key de OpenAI |
@@ -126,21 +128,26 @@ Los servicios se inician y el gateway centraliza las peticiones en `http://local
 | `MODEL_PROVIDER` | `openai` | Proveedor de LLM (`openai` / `nvidia`) |
 | `GOOGLE_SHEETS_SPREADSHEET_ID` | — | ID de hoja de cálculo (herramientas) |
 | `GOOGLE_CREDENTIALS_FILE` | `credentials.json` | Credenciales Google |
+| `GOOGLE_APPLICATION_CREDENTIALS` | `credentials.json` | Ruta de credenciales usada por el agente ADK |
 
 ## Seguridad
 
 - CORS origins restringidos (no wildcard)
 - Servicios se comunican sobre red interna Docker bridge
-- Los puertos individuales de agentes no se exponen externamente
+- Los puertos de los agentes (`8001` y `8080`) se publican en el host para depuración local; en un despliegue real conviene quitar esos mapeos y exponer solo el gateway (`8090`).
 
 ## Tests / CI
 
 CI: GitHub Actions ejecuta ruff lint + pytest en cada push y PR.
 
+Los tests viven en `tests/` en la raíz y no forman parte del contexto de build de los servicios, por lo que se ejecutan en local (no con `docker compose run`):
+
 ```bash
-docker compose run --rm chatbot_gateway pytest
-docker compose run --rm adk-agent pytest
-docker compose run --rm langgraph-agent pytest
+python -m venv .venv
+source .venv/bin/activate
+pip install pytest ruff
+pytest -q
+ruff check .
 ```
 
 ## Roadmap

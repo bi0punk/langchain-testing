@@ -5,6 +5,8 @@ services:
     build:
       context: ./adk-agent
     container_name: adk-agent
+    env_file:
+      - .env
     environment:
       PORT: "8001"                 # usado por el CMD de uvicorn
       PYTHONUNBUFFERED: "1"
@@ -22,6 +24,8 @@ services:
     build:
       context: ./langgraph-agent
     container_name: langgraph-agent
+    env_file:
+      - .env
     environment:
       PYTHONUNBUFFERED: "1"
     ports:
@@ -38,6 +42,8 @@ services:
     build:
       context: ./chatbot_gateway
     container_name: chatbot-gateway
+    env_file:
+      - .env
     environment:
       PYTHONUNBUFFERED: "1"
       # URLs internas por nombre de servicio
